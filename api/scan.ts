@@ -7,7 +7,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
  * The API key never touches the client.
  *
  * Environment variables required (set in Vercel dashboard):
- *   ANTHROPIC_API_KEY — Your Anthropic API key (sk-ant-...)
+ *  
  */
 
 // ── Rate limiter (in-memory, resets on cold start) ──────────────────
@@ -78,7 +78,7 @@ function validateBody(body: any): string | null {
 
 // ── Handler ─────────────────────────────────────────────────────────
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Origin', 'https://aegis-security-scanner.vercel.app');
+  res.setHeader('Access-Control-Allow-Origin', req.headers.origin && ['https://aegis-scanner.com', 'https://www.aegis-scanner.com', 'https://aegis-security-scanner.vercel.app'].includes(req.headers.origin) ? req.headers.origin : 'https://aegis-scanner.com');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
