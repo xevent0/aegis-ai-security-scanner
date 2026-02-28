@@ -1,0 +1,5 @@
+{
+  "name": "Aegis AI Security Scanner",
+  "description": "An AI-powered security vulnerability scanner and remediation agent that performs static analysis on code and OSINT-grounded dynamic assessment on web targets.",
+  "requestFramePermissions": []
+}
