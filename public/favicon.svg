@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="innerGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#1e40af;stop-opacity:0" />
+    </linearGradient>
+  </defs>
+  <!-- Shield body -->
+  <path d="M256 28 L462 100 C462 100 472 280 256 488 C40 280 50 100 50 100 Z" 
+        fill="url(#shieldGrad)" stroke="#93c5fd" stroke-width="8"/>
+  <!-- Inner glow -->
+  <path d="M256 60 L432 122 C432 122 440 272 256 456 C72 272 80 122 80 122 Z" 
+        fill="url(#innerGlow)" opacity="0.4"/>
+  <!-- Lock/security icon in center -->
+  <rect x="212" y="220" width="88" height="72" rx="8" fill="#0f172a" opacity="0.7"/>
+  <path d="M232 220 V190 C232 163 245 148 256 148 C267 148 280 163 280 190 V220" 
+        fill="none" stroke="#f8fafc" stroke-width="12" stroke-linecap="round"/>
+  <!-- Keyhole -->
+  <circle cx="256" cy="252" r="12" fill="#60a5fa"/>
+  <rect x="252" y="258" width="8" height="18" rx="3" fill="#60a5fa"/>
+</svg>
