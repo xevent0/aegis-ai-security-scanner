@@ -12,7 +12,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 // ── Rate limiter (in-memory, resets on cold start) ──────────────────
 const rateMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 10;
+const RATE_LIMIT = 3;
 const WINDOW_MS = 15 * 60 * 1000;
 
 function checkRate(ip: string): boolean {
@@ -119,7 +119,7 @@ Perform a thorough security audit. Return ONLY the JSON object with findings.`;
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-5-20250929',
         max_tokens: 8192,
         system: SCANNER_PROMPT,
         messages: [
