@@ -87,7 +87,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || 'unknown';
   if (!checkRate(ip)) {
-    return res.status(429).json({ error: "Rate limit reached. 10 scans per 15 minutes." });
+    return res.status(429).json({ error: "Rate limit reached. 3 scans per 15 minutes." });
   }
 
   const validationError = validateBody(req.body);

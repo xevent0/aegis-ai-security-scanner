@@ -1,8 +1,34 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { TargetType, ScanResult, ScanSettings } from '../types';
 import { Code, Globe, Network, ShieldCheck, ArrowRight, Loader2, AlertCircle, Terminal } from 'lucide-react';
-import { performScan } from '../services/geminiScanner';
+import { performScan } from '../services/scanner';
+
+const RATE_LIMIT = 3;
+const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
+function getScanTimestamps(): number[] {
+  try {
+    return JSON.parse(localStorage.getItem('scan_timestamps') || '[]');
+  } catch {
+    return [];
+  }
+}
+
+function recordScan(): void {
+  const now = Date.now();
+  const timestamps = getScanTimestamps().filter(t => now - t < WINDOW_MS);
+  timestamps.push(now);
+  localStorage.setItem('scan_timestamps', JSON.stringify(timestamps));
+}
+
+function getRemaining(): { allowed: boolean; remaining: number; resetInMs: number } {
+  const now = Date.now();
+  const timestamps = getScanTimestamps().filter(t => now - t < WINDOW_MS);
+  const remaining = RATE_LIMIT - timestamps.length;
+  const resetInMs = timestamps.length > 0 ? WINDOW_MS - (now - timestamps[0]) : 0;
+  return { allowed: remaining > 0, remaining: Math.max(0, remaining), resetInMs };
+}
 
 interface ScanInterfaceProps {
   onScanComplete: (result: ScanResult) => void;
@@ -21,9 +47,16 @@ const ScanInterface: React.FC<ScanInterfaceProps> = ({ onScanComplete, settings 
       setError("Please provide target input before scanning.");
       return;
     }
-    
+
     if (input.length > 50000) {
       setError("Input is too large (max 50,000 characters).");
+      return;
+    }
+
+    const { allowed, resetInMs } = getRemaining();
+    if (!allowed) {
+      const mins = Math.ceil(resetInMs / 60000);
+      setError(`Rate limit reached (${RATE_LIMIT} scans per 15 minutes). Please wait ~${mins} minute${mins !== 1 ? 's' : ''} before scanning again.`);
       return;
     }
 
@@ -51,6 +84,7 @@ const ScanInterface: React.FC<ScanInterfaceProps> = ({ onScanComplete, settings 
 
     try {
       const result = await performScan(input, targetType, settings);
+      recordScan();
       clearInterval(interval);
       const doneTime = new Date().toLocaleTimeString([], { hour12: false });
       setScanLog(prev => [
@@ -153,6 +187,10 @@ const ScanInterface: React.FC<ScanInterfaceProps> = ({ onScanComplete, settings 
                 <div className="flex items-center gap-1">
                   <div className={`w-2 h-2 rounded-full ${settings.deepThinking ? 'bg-green-500' : 'bg-slate-700'}`} />
                   Deep Scan {settings.deepThinking ? 'ON' : 'OFF'}
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className={`w-2 h-2 rounded-full ${getRemaining().remaining > 0 ? 'bg-blue-500' : 'bg-red-500'}`} />
+                  {getRemaining().remaining}/{RATE_LIMIT} scans left
                 </div>
                 {targetType !== TargetType.CODE && (
                   <div className="flex items-center gap-1 text-blue-400">

@@ -4,7 +4,7 @@ import { TargetType, Severity, Vulnerability, ScanResult, ScanSettings } from ".
  * Aegis Scanner Client
  * 
  * Architecture: This module calls YOUR backend API proxy at /api/scan,
- * which holds the Gemini API key server-side. The client never touches
+ * which holds the Claude API key server-side. The client never touches
  * the API key directly.
  * 
  * For local development, set VITE_API_BASE_URL in .env.local
