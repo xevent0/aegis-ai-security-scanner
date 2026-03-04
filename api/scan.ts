@@ -13,7 +13,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 // ── Rate limiter (in-memory, resets on cold start) ──────────────────
 const rateMap = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT = 3;
-const WINDOW_MS = 15 * 60 * 1000;
+const WINDOW_MS = 2 * 60 * 60 * 1000; // 2 hours
 
 function checkRate(ip: string): boolean {
   const now = Date.now();
@@ -87,7 +87,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || 'unknown';
   if (!checkRate(ip)) {
-    return res.status(429).json({ error: "Rate limit reached. 3 scans per 15 minutes." });
+    return res.status(429).json({ error: "Rate limit reached. 3 scans per 2 hours." });
   }
 
   const validationError = validateBody(req.body);

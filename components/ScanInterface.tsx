@@ -5,7 +5,7 @@ import { Code, Globe, Network, ShieldCheck, ArrowRight, Loader2, AlertCircle, Te
 import { performScan } from '../services/scanner';
 
 const RATE_LIMIT = 3;
-const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+const WINDOW_MS = 2 * 60 * 60 * 1000; // 2 hours
 
 function getScanTimestamps(): number[] {
   try {
@@ -55,8 +55,11 @@ const ScanInterface: React.FC<ScanInterfaceProps> = ({ onScanComplete, settings 
 
     const { allowed, resetInMs } = getRemaining();
     if (!allowed) {
-      const mins = Math.ceil(resetInMs / 60000);
-      setError(`Rate limit reached (${RATE_LIMIT} scans per 15 minutes). Please wait ~${mins} minute${mins !== 1 ? 's' : ''} before scanning again.`);
+      const totalMins = Math.ceil(resetInMs / 60000);
+      const hrs = Math.floor(totalMins / 60);
+      const mins = totalMins % 60;
+      const timeStr = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+      setError(`Rate limit reached (${RATE_LIMIT} scans per 2 hours). Please wait ~${timeStr} before scanning again.`);
       return;
     }
 
@@ -188,10 +191,21 @@ const ScanInterface: React.FC<ScanInterfaceProps> = ({ onScanComplete, settings 
                   <div className={`w-2 h-2 rounded-full ${settings.deepThinking ? 'bg-green-500' : 'bg-slate-700'}`} />
                   Deep Scan {settings.deepThinking ? 'ON' : 'OFF'}
                 </div>
-                <div className="flex items-center gap-1">
-                  <div className={`w-2 h-2 rounded-full ${getRemaining().remaining > 0 ? 'bg-blue-500' : 'bg-red-500'}`} />
-                  {getRemaining().remaining}/{RATE_LIMIT} scans left
-                </div>
+                {(() => {
+                  const { remaining, resetInMs } = getRemaining();
+                  const totalMins = Math.ceil(resetInMs / 60000);
+                  const hrs = Math.floor(totalMins / 60);
+                  const mins = totalMins % 60;
+                  const timeStr = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+                  return (
+                    <div className="flex items-center gap-1">
+                      <div className={`w-2 h-2 rounded-full ${remaining > 0 ? 'bg-blue-500' : 'bg-red-500'}`} />
+                      {remaining > 0
+                        ? `${remaining}/${RATE_LIMIT} scans left`
+                        : `Resets in ~${timeStr}`}
+                    </div>
+                  );
+                })()}
                 {targetType !== TargetType.CODE && (
                   <div className="flex items-center gap-1 text-blue-400">
                     <Globe className="w-3 h-3" /> Grounding Enabled
