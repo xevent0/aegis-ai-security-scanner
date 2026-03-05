@@ -118,7 +118,7 @@ ${lastScan.findings.map(f => `
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h2 className="text-3xl font-bold text-white">Security Overview</h2>
-                <p className="text-slate-400">Risk metrics for {lastScan?.target || 'no active target'}.</p>
+                <p className="text-slate-400">Risk metrics for {lastScan ? (lastScan.target.length > 80 ? lastScan.target.slice(0, 80) + '...' : lastScan.target) : 'no active target'}.</p>
               </div>
               {lastScan && (
                 <div className="flex items-center gap-3">
